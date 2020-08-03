@@ -20,9 +20,9 @@ mixin {
     add sourceSets.main, "revampedwolf.refmap.json"
 }
 
-version = '1.0'
+version = '1.16.1-0.1.0'
 group = 'baguchan.revampedwolf' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'revampedwolf'
+archivesBaseName = 'RevampedWolf'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
