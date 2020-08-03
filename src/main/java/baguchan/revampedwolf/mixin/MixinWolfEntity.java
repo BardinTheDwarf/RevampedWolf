@@ -24,7 +24,6 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -148,16 +147,19 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
         }
     }
 
-    //prevent fixing health
-    @Overwrite
-    public void setTamed(boolean tamed) {
+    @Inject(method = "setTamed", at = @At("HEAD"), cancellable = true)
+    public void setTamed(boolean tamed, CallbackInfo info) {
         super.setTamed(tamed);
+        /*
+         * prevent fixing health, this method make modded health friendly
+         */
         if (tamed && this.getAttribute(Attributes.ATTACK_DAMAGE).getBaseValue() < 20.0D) {
             this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(20.0D);
             this.setHealth(this.getMaxHealth());
         }
 
         this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(4.0D);
+        info.cancel();
     }
 
     @Nullable
