@@ -1,0 +1,9 @@
+{
+  "mob.wolf.howling": {
+    "category": "neutral",
+    "sounds": [
+      "revampedwolf:mob/wolf/howling"
+    ],
+    "subtitle": "revampedwolf:subtitles.wolf.howling"
+  }
+}

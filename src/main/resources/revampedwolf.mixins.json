@@ -7,6 +7,9 @@
   "mixins": [
     "MixinWolfEntity"
   ],
+  "client": [
+    "client.MixinWolfModel"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

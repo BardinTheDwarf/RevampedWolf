@@ -13,11 +13,11 @@ public class FollowLeaderGoal<T extends TameableEntity & LeaderEntity> extends G
 
     public FollowLeaderGoal(T taskOwnerIn) {
         this.taskOwner = taskOwnerIn;
-        this.cooldown = this.func_212825_a(taskOwnerIn);
+        this.cooldown = this.setCoolDown(taskOwnerIn);
         this.setMutexFlags(EnumSet.of(Flag.MOVE));
     }
 
-    protected int func_212825_a(T taskOwnerIn) {
+    protected int setCoolDown(T taskOwnerIn) {
         return 200 + taskOwnerIn.getRNG().nextInt(200) % 20;
     }
 
@@ -29,14 +29,14 @@ public class FollowLeaderGoal<T extends TameableEntity & LeaderEntity> extends G
         if (this.taskOwner.isLeader() || this.taskOwner.isTamed() || this.taskOwner.getAttackTarget() != null) {
             return false;
         } else if (this.taskOwner.getLeader() == null) {
-            return true;
+            return false;
         } else if (this.cooldown > 0) {
             --this.cooldown;
             return false;
         } else {
-            this.cooldown = this.func_212825_a(this.taskOwner);
+            this.cooldown = this.setCoolDown(this.taskOwner);
 
-            return this.taskOwner.getLeader() != null && this.taskOwner.getDistanceSq(this.taskOwner.getLeader()) > 42;
+            return this.taskOwner.hasLeader() && this.taskOwner.getDistanceSq(this.taskOwner.getLeader()) > 42;
         }
     }
 
@@ -64,7 +64,7 @@ public class FollowLeaderGoal<T extends TameableEntity & LeaderEntity> extends G
      * Keep ticking a continuous task that has already been started
      */
     public void tick() {
-        if (--this.navigateTimer <= 0 && this.taskOwner.getLeader() != null) {
+        if (--this.navigateTimer <= 0 && this.taskOwner.hasLeader()) {
             this.navigateTimer = 10;
             this.taskOwner.getNavigator().tryMoveToEntityLiving(this.taskOwner.getLeader(), 1.0D);
         }

@@ -4,19 +4,15 @@ import baguchan.revampedwolf.entity.GroupData;
 import baguchan.revampedwolf.entity.HowlingEntity;
 import baguchan.revampedwolf.entity.LeaderEntity;
 import baguchan.revampedwolf.entity.goal.FollowLeaderGoal;
+import baguchan.revampedwolf.entity.goal.HowlGoal;
 import com.google.common.collect.Lists;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ILivingEntityData;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.FollowOwnerGoal;
-import net.minecraft.entity.ai.goal.FollowParentGoal;
-import net.minecraft.entity.passive.FoxEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.WolfEntity;
-import net.minecraft.entity.passive.fish.AbstractGroupFishEntity;
-import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTUtil;
@@ -46,7 +42,6 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
 
 
     private float howlAnimationProgress;
-    //For when I want to animate this
     private float lastHowlAnimationProgress;
 
     protected MixinWolfEntity(EntityType<? extends TameableEntity> type, World world) {
@@ -62,13 +57,24 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
 
     @Inject(method = "registerGoals", at = @At("HEAD"), cancellable = true)
     protected void onRegisterGoals(CallbackInfo callbackInfo) {
+        this.goalSelector.addGoal(5, new HowlGoal(this));
         this.goalSelector.addGoal(6, new FollowLeaderGoal<>(this));
+    }
+
+    @Inject(method = "handleStatusUpdate", at = @At("HEAD"), cancellable = true)
+    public void handleStatusUpdate(byte status, CallbackInfo callbackInfo) {
+        if (status == 64) {
+            this.setHowling(true);
+            callbackInfo.cancel();
+        } else {
+            this.setHowling(false);
+        }
     }
 
     public List<UUID> getLeaderUUIDs() {
         List<UUID> list = Lists.newArrayList();
-        list.add(this.dataManager.get(LEADER_UUID_SECONDARY).orElse((UUID)null));
-        list.add(this.dataManager.get(LEADER_UUID_MAIN).orElse((UUID)null));
+        list.add(this.dataManager.get(LEADER_UUID_SECONDARY).orElse((UUID) null));
+        list.add(this.dataManager.get(LEADER_UUID_MAIN).orElse((UUID) null));
         return list;
     }
 
@@ -142,10 +148,11 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
         }
     }
 
+    //prevent fixing health
     @Overwrite
     public void setTamed(boolean tamed) {
         super.setTamed(tamed);
-        if (tamed) {
+        if (tamed && this.getAttribute(Attributes.ATTACK_DAMAGE).getBaseValue() < 20.0D) {
             this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(20.0D);
             this.setHealth(this.getMaxHealth());
         }
@@ -167,6 +174,7 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
             }
         }
 
+        //leader health bounus
         if(!isTamed() && isLeader()){
             this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(10.0D);
             this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(4.0D);
