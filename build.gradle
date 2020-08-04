@@ -20,7 +20,7 @@ mixin {
     add sourceSets.main, "revampedwolf.refmap.json"
 }
 
-version = '1.16.1-0.1.0'
+version = '1.16.1-0.1.1'
 group = 'baguchan.revampedwolf' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'RevampedWolf'
 
@@ -136,7 +136,8 @@ jar {
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
             "Implementation-Vendor" :"baguchan",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+            "MixinConfigs": "revampedwolf.mixins.json"
         ])
     }
 }
