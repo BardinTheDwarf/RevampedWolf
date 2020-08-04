@@ -4,6 +4,7 @@ import baguchan.revampedwolf.entity.HowlingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.EnumSet;
@@ -26,8 +27,8 @@ public class HowlGoal extends Goal {
         if (--this.cooldown <= 0) {
             this.cooldown = this.setCoolDown(this.mob);
 
-            return this.mob.getAttackTarget() == null && world.getDayTime() > 16000 && world.getDayTime() < 21000 &&
-                    !mob.isChild() && this.mob.getRNG().nextInt(10) == 0;
+            return this.mob.getAttackTarget() == null && this.world.canSeeSky(new BlockPos(this.mob.getPositionVec())) && world.getDayTime() > 16000 && world.getDayTime() < 21000 &&
+                    !mob.isChild() && this.mob.getRNG().nextInt(15) == 0;
         }
         return false;
     }
