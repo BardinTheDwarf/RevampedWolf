@@ -1,9 +1,9 @@
 package baguchan.revampedwolf.entity.goal;
 
 import baguchan.revampedwolf.entity.HowlingEntity;
-import baguchan.revampedwolf.registry.WolfSounds;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 
 import java.util.EnumSet;
@@ -42,7 +42,7 @@ public class HowlGoal extends Goal {
         this.howligTimer = 60;
         this.world.setEntityState(this.mob, (byte) 64);
         this.mob.getNavigator().clearPath();
-        this.mob.playSound(WolfSounds.WOLF_HOWLING, 2.5F, this.mob.getRNG().nextFloat() * 0.1F + 1.0F);
+        this.mob.playSound(SoundEvents.ENTITY_WOLF_HOWL, 2.5F, this.mob.getRNG().nextFloat() * 0.1F + 1.0F);
     }
 
     @Override
