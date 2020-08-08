@@ -100,7 +100,12 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
         this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
         this.targetSelector.addGoal(3, (new HurtByTargetGoal(this)).setCallsForHelp());
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(wolfEntity, PlayerEntity.class, 10, true, false, this::func_233680_b_));
-        this.targetSelector.addGoal(5, new NonTamedTargetGoal<>(this, AnimalEntity.class, false, TARGET_ENTITIES));
+        this.targetSelector.addGoal(5, new NonTamedTargetGoal(this, AnimalEntity.class, false, TARGET_ENTITIES) {
+            @Override
+            public boolean shouldExecute() {
+                return eatCooldownTicks <= 0 && super.shouldExecute();
+            }
+        });
         this.targetSelector.addGoal(6, new NonTamedTargetGoal<>(this, TurtleEntity.class, false, TurtleEntity.TARGET_DRY_BABY));
         this.targetSelector.addGoal(7, new NearestAttackableTargetGoal<>(this, AbstractSkeletonEntity.class, false));
         this.targetSelector.addGoal(8, new ResetAngerGoal<>(this, true));
