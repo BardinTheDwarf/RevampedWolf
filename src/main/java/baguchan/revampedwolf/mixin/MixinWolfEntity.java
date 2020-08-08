@@ -1,14 +1,12 @@
 package baguchan.revampedwolf.mixin;
 
-import baguchan.revampedwolf.entity.GroupData;
-import baguchan.revampedwolf.entity.HowlingEntity;
-import baguchan.revampedwolf.entity.IEatable;
-import baguchan.revampedwolf.entity.LeaderEntity;
+import baguchan.revampedwolf.entity.*;
 import baguchan.revampedwolf.entity.goal.FollowLeaderGoal;
 import baguchan.revampedwolf.entity.goal.GoToEatGoal;
 import baguchan.revampedwolf.entity.goal.HowlGoal;
 import baguchan.revampedwolf.entity.goal.WolfAvoidEntityGoal;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
@@ -21,6 +19,7 @@ import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.passive.horse.LlamaEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -31,36 +30,46 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.ItemParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.Util;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.BiomeDictionary;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import static net.minecraft.entity.passive.WolfEntity.TARGET_ENTITIES;
-
 @Mixin(WolfEntity.class)
-public abstract class MixinWolfEntity extends TameableEntity implements HowlingEntity, LeaderEntity, IAngerable, IEatable {
+public abstract class MixinWolfEntity extends TameableEntity implements HowlingEntity, LeaderEntity, IAngerable, IEatable, IWolfType {
     private static final DataParameter<Boolean> HOWLING = EntityDataManager.createKey(WolfEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Optional<UUID>> LEADER_UUID_SECONDARY = EntityDataManager.createKey(WolfEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
     private static final DataParameter<Optional<UUID>> LEADER_UUID_MAIN = EntityDataManager.createKey(WolfEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
     private static final DataParameter<Integer> EAT_COUNTER = EntityDataManager.createKey(WolfEntity.class, DataSerializers.VARINT);
+    private static final DataParameter<Integer> WOLF_TYPE = EntityDataManager.createKey(WolfEntity.class, DataSerializers.VARINT);
+
+    private static final Map<Integer, String> TEXTURE_BY_STRING = Util.make(Maps.newHashMap(), (p_213410_0_) -> {
+        p_213410_0_.put(0, "textures/entity/wolf/wolf");
+        p_213410_0_.put(1, "textures/entity/wolf/wolf_brown");
+    });
 
     private float howlAnimationProgress;
     private float lastHowlAnimationProgress;
     private int eatCooldownTicks;
 
-    protected MixinWolfEntity(EntityType<? extends TameableEntity> type, World world) {
+    protected MixinWolfEntity(EntityType<? extends WolfEntity> type, World world) {
         super(type, world);
     }
 
@@ -75,6 +84,7 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
         this.dataManager.register(LEADER_UUID_MAIN, Optional.empty());
         this.dataManager.register(LEADER_UUID_SECONDARY, Optional.empty());
         this.dataManager.register(EAT_COUNTER, 0);
+        this.dataManager.register(WOLF_TYPE, 0);
     }
 
     @Inject(method = "registerGoals", at = @At("HEAD"), cancellable = true)
@@ -99,7 +109,7 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
         this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
         this.targetSelector.addGoal(3, (new HurtByTargetGoal(this)).setCallsForHelp());
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(wolfEntity, PlayerEntity.class, 10, true, false, this::func_233680_b_));
-        this.targetSelector.addGoal(5, new NonTamedTargetGoal(this, AnimalEntity.class, false, TARGET_ENTITIES) {
+        this.targetSelector.addGoal(5, new NonTamedTargetGoal(this, AnimalEntity.class, false, WolfEntity.TARGET_ENTITIES) {
             @Override
             public boolean shouldExecute() {
                 return eatCooldownTicks <= 0 && super.shouldExecute();
@@ -109,6 +119,35 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
         this.targetSelector.addGoal(7, new NearestAttackableTargetGoal<>(this, AbstractSkeletonEntity.class, false));
         this.targetSelector.addGoal(8, new ResetAngerGoal<>(this, true));
         callbackInfo.cancel();
+    }
+
+    @Override
+    public String getWolfTypeName() {
+        String state = null;
+
+        if (this.isTamed()) {
+            state = "_tame";
+        } else if (this.func_233678_J__()) {
+            state = "_angry";
+        }
+
+        if (state != null) {
+            return TEXTURE_BY_STRING.getOrDefault(this.getWolfType(), TEXTURE_BY_STRING.get(0)) + state + ".png";
+        } else {
+            return TEXTURE_BY_STRING.getOrDefault(this.getWolfType(), TEXTURE_BY_STRING.get(0)) + ".png";
+        }
+    }
+
+    public int getWolfType() {
+        return this.dataManager.get(WOLF_TYPE);
+    }
+
+    public void setWolfType(int type) {
+        if (type < 0 || type >= 2) {
+            type = this.rand.nextInt(2);
+        }
+
+        this.dataManager.set(WOLF_TYPE, type);
     }
 
     @Inject(method = "handleStatusUpdate", at = @At("HEAD"), cancellable = true)
@@ -181,6 +220,7 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
 
         compound.put("Leader", listnbt);
         compound.putInt("EatCooldown", eatCooldownTicks);
+        compound.putInt("WolfType", this.getWolfType());
     }
 
     /**
@@ -193,9 +233,10 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
         for (int i = 0; i < listnbt.size(); ++i) {
             this.addLeaderUUID(NBTUtil.readUniqueId(listnbt.get(i)));
         }
-        this.setCanPickUpLoot(true);
-
         this.eatCooldownTicks = compound.getInt("EatCooldown");
+        this.setWolfType(compound.getInt("WolfType"));
+
+        this.setCanPickUpLoot(true);
     }
 
     @Inject(method = "tick", at = @At("TAIL"), cancellable = true)
@@ -325,14 +366,24 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
     public ILivingEntityData onInitialSpawn(IWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
         super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
 
-        if(reason != SpawnReason.BREEDING && reason != SpawnReason.STRUCTURE && reason != SpawnReason.COMMAND && reason != SpawnReason.SPAWN_EGG) {
+        if (BiomeDictionary.hasType(worldIn.getBiome(new BlockPos(this.getPosition())), BiomeDictionary.Type.COLD)) {
+            this.setWolfType(0);
+        } else {
+            this.setWolfType(this.rand.nextInt(2));
+        }
+
+        if (reason != SpawnReason.BREEDING && reason != SpawnReason.STRUCTURE && reason != SpawnReason.COMMAND && reason != SpawnReason.SPAWN_EGG) {
             if (spawnDataIn == null) {
                 spawnDataIn = new GroupData(this);
                 this.addLeaderUUID(this.getUniqueID());
             } else {
                 this.addLeaderUUID(((GroupData) spawnDataIn).groupLeader.getUniqueID());
+                if (((GroupData) spawnDataIn).groupLeader instanceof IWolfType) {
+                    this.setWolfType(((IWolfType) ((GroupData) spawnDataIn).groupLeader).getWolfType());
+                }
             }
         }
+
 
         //leader health bounus
         if(!isTamed() && isLeader()){
@@ -360,5 +411,37 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
     @Override
     public float getHowlAnimationProgress(float delta) {
         return this.lastHowlAnimationProgress + (this.howlAnimationProgress - this.lastHowlAnimationProgress) * delta;
+    }
+
+    @Inject(method = "createChild", at = @At("HEAD"), cancellable = true)
+    public void createChild(AgeableEntity ageable, CallbackInfoReturnable<WolfEntity> callbackInfo) {
+        WolfEntity wolfentity = EntityType.WOLF.create(this.world);
+        if (ageable instanceof WolfEntity && ageable instanceof IWolfType) {
+            if (wolfentity instanceof IWolfType) {
+                if (this.rand.nextBoolean()) {
+                    ((IWolfType) wolfentity).setWolfType(this.getWolfType());
+                } else {
+                    ((IWolfType) wolfentity).setWolfType(((IWolfType) ageable).getWolfType());
+                }
+
+                if (this.isTamed()) {
+                    wolfentity.setOwnerId(this.getOwnerId());
+                    wolfentity.setTamed(true);
+                    if (this.rand.nextBoolean()) {
+                        wolfentity.setCollarColor(this.getCollarColor());
+                    } else {
+                        wolfentity.setCollarColor(((WolfEntity) ageable).getCollarColor());
+                    }
+                }
+            }
+        }
+
+        callbackInfo.setReturnValue(wolfentity);
+        callbackInfo.cancel();
+    }
+
+    @Shadow
+    public DyeColor getCollarColor() {
+        return null;
     }
 }

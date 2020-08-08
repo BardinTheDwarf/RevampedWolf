@@ -8,7 +8,8 @@
     "MixinWolfEntity"
   ],
   "client": [
-    "client.MixinWolfModel"
+    "client.MixinWolfModel",
+    "client.MixinWolfRenderer"
   ],
   "injectors": {
     "defaultRequire": 1
