@@ -346,12 +346,13 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
         }
     }
 
+    /*
+     * prevent fixing health, this method make modded health friendly
+     */
     @Inject(method = "setTamed", at = @At("HEAD"), cancellable = true)
     public void setTamed(boolean tamed, CallbackInfo info) {
         super.setTamed(tamed);
-        /*
-         * prevent fixing health, this method make modded health friendly
-         */
+
         if (tamed && this.getAttribute(Attributes.ATTACK_DAMAGE).getBaseValue() < 20.0D) {
             this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(20.0D);
             this.setHealth(this.getMaxHealth());
