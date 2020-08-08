@@ -366,6 +366,7 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
     public ILivingEntityData onInitialSpawn(IWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
         super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
 
+        //when cold biome, alway white
         if (BiomeDictionary.hasType(worldIn.getBiome(new BlockPos(this.getPosition())), BiomeDictionary.Type.COLD)) {
             this.setWolfType(0);
         } else {
