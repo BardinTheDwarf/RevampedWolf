@@ -38,7 +38,6 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -78,8 +77,8 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
         this.dataManager.register(EAT_COUNTER, 0);
     }
 
-    @Overwrite
-    protected void registerGoals() {
+    @Inject(method = "registerGoals", at = @At("HEAD"), cancellable = true)
+    protected void registerGoals(CallbackInfo callbackInfo) {
         WolfEntity wolfEntity = (WolfEntity) ((Object) this);
 
         this.goalSelector.addGoal(1, new SwimGoal(this));
@@ -109,6 +108,7 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
         this.targetSelector.addGoal(6, new NonTamedTargetGoal<>(this, TurtleEntity.class, false, TurtleEntity.TARGET_DRY_BABY));
         this.targetSelector.addGoal(7, new NearestAttackableTargetGoal<>(this, AbstractSkeletonEntity.class, false));
         this.targetSelector.addGoal(8, new ResetAngerGoal<>(this, true));
+        callbackInfo.cancel();
     }
 
     @Inject(method = "handleStatusUpdate", at = @At("HEAD"), cancellable = true)
@@ -270,13 +270,33 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
         this.dataManager.set(EAT_COUNTER, p_213534_1_ ? 1 : 0);
     }
 
+    private void spitOutItem(ItemStack stackIn) {
+        if (!stackIn.isEmpty() && !this.world.isRemote) {
+            ItemEntity itementity = new ItemEntity(this.world, this.getPosX() + this.getLookVec().x, this.getPosY() + 1.0D, this.getPosZ() + this.getLookVec().z, stackIn);
+            itementity.setPickupDelay(40);
+            itementity.setThrowerId(this.getUniqueID());
+            this.world.addEntity(itementity);
+        }
+    }
+
+    private void spawnItem(ItemStack stackIn) {
+        ItemEntity itementity = new ItemEntity(this.world, this.getPosX(), this.getPosY(), this.getPosZ(), stackIn);
+        this.world.addEntity(itementity);
+    }
+
     @Override
     protected void updateEquipmentIfNeeded(ItemEntity itemEntity) {
         if (!this.isTamed() && this.eatCooldownTicks <= 0) {
             if (this.getItemStackFromSlot(EquipmentSlotType.MAINHAND).isEmpty() && itemEntity.getItem().isFood() && itemEntity.getItem().getItem().getFood().isMeat()) {
-                this.triggerItemPickupTrigger(itemEntity);
                 ItemStack itemstack = itemEntity.getItem();
-                this.setItemStackToSlot(EquipmentSlotType.MAINHAND, itemstack);
+                int i = itemstack.getCount();
+                if (i > 1) {
+                    this.spawnItem(itemstack.split(i - 1));
+                }
+
+                this.spitOutItem(this.getItemStackFromSlot(EquipmentSlotType.MAINHAND));
+                this.triggerItemPickupTrigger(itemEntity);
+                this.setItemStackToSlot(EquipmentSlotType.MAINHAND, itemstack.split(1));
                 this.inventoryHandsDropChances[EquipmentSlotType.MAINHAND.getIndex()] = 2.0F;
                 this.onItemPickup(itemEntity, itemstack.getCount());
                 itemEntity.remove();
