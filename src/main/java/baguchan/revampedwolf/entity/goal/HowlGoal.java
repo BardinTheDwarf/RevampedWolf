@@ -3,6 +3,7 @@ package baguchan.revampedwolf.entity.goal;
 import baguchan.revampedwolf.entity.HowlingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -11,12 +12,12 @@ import java.util.EnumSet;
 
 public class HowlGoal extends Goal {
 
-    private final MobEntity mob;
+    private final WolfEntity mob;
     private final World world;
     private int howligTimer;
     private int cooldown;
 
-    public HowlGoal(MobEntity mob) {
+    public HowlGoal(WolfEntity mob) {
         this.mob = mob;
         this.world = mob.world;
         this.setMutexFlags(EnumSet.of(Flag.MOVE, Flag.LOOK, Flag.JUMP));
@@ -27,7 +28,7 @@ public class HowlGoal extends Goal {
         if (--this.cooldown <= 0) {
             this.cooldown = this.setCoolDown(this.mob);
 
-            return this.mob.getAttackTarget() == null && this.world.canSeeSky(new BlockPos(this.mob.getPositionVec())) && world.getDayTime() > 16000 && world.getDayTime() < 21000 &&
+            return (this.mob.isTamed() && this.mob.func_233685_eM_() || !this.mob.isTamed()) && this.mob.getAttackTarget() == null && this.world.canSeeSky(new BlockPos(this.mob.getPositionVec())) && world.getDayTime() > 16000 && world.getDayTime() < 21000 &&
                     !mob.isChild() && this.mob.getRNG().nextInt(15) == 0;
         }
         return false;
