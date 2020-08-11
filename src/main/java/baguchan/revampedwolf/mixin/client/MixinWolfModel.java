@@ -1,6 +1,7 @@
 package baguchan.revampedwolf.mixin.client;
 
 import baguchan.revampedwolf.entity.HowlingEntity;
+import net.minecraft.client.renderer.entity.model.IHasHead;
 import net.minecraft.client.renderer.entity.model.TintedAgeableModel;
 import net.minecraft.client.renderer.entity.model.WolfModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
@@ -13,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WolfModel.class)
-public abstract class MixinWolfModel<T extends WolfEntity> extends TintedAgeableModel<T> {
+public abstract class MixinWolfModel<T extends WolfEntity> extends TintedAgeableModel<T> implements IHasHead {
 
     @Shadow
     @Final
@@ -42,4 +43,8 @@ public abstract class MixinWolfModel<T extends WolfEntity> extends TintedAgeable
         }
     }
 
+    @Override
+    public ModelRenderer getModelHead() {
+        return this.head;
+    }
 }

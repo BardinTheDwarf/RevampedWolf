@@ -1,6 +1,7 @@
 package baguchan.revampedwolf.mixin.client;
 
 import baguchan.revampedwolf.RevampedWolfCore;
+import baguchan.revampedwolf.client.WolfHeldItemLayer;
 import baguchan.revampedwolf.entity.IWolfType;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;
@@ -11,6 +12,7 @@ import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(WolfRenderer.class)
@@ -18,6 +20,11 @@ public abstract class MixinWolfRenderer extends MobRenderer<WolfEntity, WolfMode
 
     public MixinWolfRenderer(EntityRendererManager renderManagerIn) {
         super(renderManagerIn, new WolfModel<>(), 0.5F);
+    }
+
+    @Inject(method = "<init>(Lnet/minecraft/client/renderer/entity/EntityRendererManager;)V", at = @At("RETURN"))
+    public void onConstructor(CallbackInfo info) {
+        this.addLayer(new WolfHeldItemLayer(this));
     }
 
     /**

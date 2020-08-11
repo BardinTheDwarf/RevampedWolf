@@ -23,7 +23,7 @@ displayName="RevampedWolf" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
 #updateJSONURL="http://myurl.me/" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
-#displayURL="http://example.com/" #optional
+displayURL="https://www.curseforge.com/minecraft/mc-mods/revampedwolf" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="revampedwolf.png" #optional
 # A text field displayed in the mod UI
@@ -51,6 +51,6 @@ This mod is revamped wolf mechanic
 [[dependencies.revampedwolf]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.1]"
+    versionRange="[1.16.1,]"
     ordering="NONE"
     side="BOTH"
