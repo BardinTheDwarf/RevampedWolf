@@ -47,7 +47,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
@@ -233,7 +232,7 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
 
                             @Override
                             public ITextComponent getDisplayName() {
-                                return new TranslationTextComponent("container.redstonemecha.mecha_inventory");
+                                return getName();
                             }
                         }, buf -> {
                             buf.writeInt(this.getEntityId());
