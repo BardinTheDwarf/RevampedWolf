@@ -43,15 +43,13 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fml.network.NetworkHooks;
 import org.spongepowered.asm.mixin.Mixin;
@@ -510,13 +508,10 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
         info.cancel();
     }
 
-    @Nullable
     @Override
-    public ILivingEntityData onInitialSpawn(IWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-        super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
-
+    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
         //when cold biome, alway white
-        if (BiomeDictionary.hasType(worldIn.getBiome(new BlockPos(this.getPosition())), BiomeDictionary.Type.COLD)) {
+        if (worldIn.getBiome(this.getPosition()).getTemperature(this.getPosition()) <= 0.15F) {
             this.setWolfType(0);
         } else {
             this.setWolfType(this.rand.nextInt(2));
@@ -540,7 +535,6 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
             this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(10.0D);
             this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(4.0D);
         }
-
         return spawnDataIn;
     }
 
