@@ -556,9 +556,9 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
     public float getHowlAnimationProgress(float delta) {
         return this.lastHowlAnimationProgress + (this.howlAnimationProgress - this.lastHowlAnimationProgress) * delta;
     }
-
-    @Inject(method = "createChild", at = @At("HEAD"), cancellable = true)
-    public void createChild(AgeableEntity ageable, CallbackInfoReturnable<WolfEntity> callbackInfo) {
+    
+    @Inject(method = "func_241840_a", at = @At("HEAD"), cancellable = true)
+    public void func_241840_a(ServerWorld p_241840_1_, AgeableEntity ageable, CallbackInfoReturnable<WolfEntity> callbackInfo) {
         WolfEntity wolfentity = EntityType.WOLF.create(this.world);
         if (ageable instanceof WolfEntity && ageable instanceof IWolfType) {
             if (wolfentity instanceof IWolfType) {
@@ -569,8 +569,11 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
                 }
 
                 if (this.isTamed()) {
-                    wolfentity.setOwnerId(this.getOwnerId());
-                    wolfentity.setTamed(true);
+                    UUID uuid = this.getOwnerId();
+                    if (uuid != null) {
+                        wolfentity.setOwnerId(this.getOwnerId());
+                        wolfentity.setTamed(true);
+                    }
                     if (this.rand.nextBoolean()) {
                         wolfentity.setCollarColor(this.getCollarColor());
                     } else {
