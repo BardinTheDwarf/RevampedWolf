@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  X",
+    "XXX",
+    "B B"
+  ],
+  "key": {
+    "B": {
+      "item": "minecraft:netherite_boots"
+    },
+    "X": {
+      "item": "minecraft:netherite_ingot"
+    }
+  },
+  "result": {
+    "item": "revampedwolf:netherite_wolf_armor"
+  }
+}

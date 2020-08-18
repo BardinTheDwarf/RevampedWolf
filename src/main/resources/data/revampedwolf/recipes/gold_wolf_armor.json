@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  X",
+    "XXX",
+    "B B"
+  ],
+  "key": {
+    "B": {
+      "item": "minecraft:gold_boots"
+    },
+    "X": {
+      "item": "minecraft:gold_ingot"
+    }
+  },
+  "result": {
+    "item": "revampedwolf:gold_wolf_armor"
+  }
+}

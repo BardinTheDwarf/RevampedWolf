@@ -10,7 +10,6 @@ import baguchan.revampedwolf.item.WolfArmorItem;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.item.ItemEntity;
@@ -67,8 +66,6 @@ import java.util.UUID;
 
 @Mixin(WolfEntity.class)
 public abstract class MixinWolfEntity extends TameableEntity implements HowlingEntity, LeaderEntity, IAngerable, IEatable, IWolfType, IWolfArmor, IWolfInventory, IInventoryChangedListener {
-    private static final UUID ARMOR_MODIFIER_UUID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F295");
-
     private static final DataParameter<Boolean> HOWLING = EntityDataManager.createKey(WolfEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Optional<UUID>> LEADER_UUID_SECONDARY = EntityDataManager.createKey(WolfEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
     private static final DataParameter<Optional<UUID>> LEADER_UUID_MAIN = EntityDataManager.createKey(WolfEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
@@ -160,15 +157,6 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
 
     private void setArmor(ItemStack p_213804_1_) {
         this.setChestArmor(p_213804_1_);
-        if (!this.world.isRemote) {
-            this.getAttribute(Attributes.ARMOR).removeModifier(ARMOR_MODIFIER_UUID);
-            if (this.isWolfArmor(p_213804_1_)) {
-                int i = ((WolfArmorItem) p_213804_1_.getItem()).getArmorValue();
-                if (i != 0) {
-                    this.getAttribute(Attributes.ARMOR).applyNonPersistentModifier(new AttributeModifier(ARMOR_MODIFIER_UUID, "Wolf armor bonus", (double) i, AttributeModifier.Operation.ADDITION));
-                }
-            }
-        }
     }
 
     /**
