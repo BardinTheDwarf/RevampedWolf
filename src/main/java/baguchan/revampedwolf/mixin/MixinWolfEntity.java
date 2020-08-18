@@ -38,10 +38,7 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.ItemParticleData;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.Util;
+import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
@@ -246,6 +243,27 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
     }
 
     @Override
+    protected void damageArmor(DamageSource damageSource, float damage) {
+        super.damageArmor(damageSource, damage);
+        if (!(damage <= 0.0F)) {
+            damage = damage / 4.0F;
+            if (damage < 1.0F) {
+                damage = 1.0F;
+            }
+
+
+            ItemStack itemstack = this.wolfInventory.getStackInSlot(0);
+            if ((!damageSource.isFireDamage() || !itemstack.getItem().isBurnable()) && itemstack.getItem() instanceof WolfArmorItem) {
+                itemstack.damageItem((int) damage, this, (p_214023_1_) -> {
+                    p_214023_1_.sendBreakAnimation(EquipmentSlotType.CHEST);
+                });
+            }
+
+
+        }
+    }
+
+    @Override
     public String getWolfTypeName() {
         String state = null;
 
@@ -299,7 +317,7 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
         }
     }
 
-    public boolean isLeader(){
+    public boolean isLeader() {
         return this.getLeaderUUIDs().contains(this.getUniqueID());
     }
 
@@ -308,9 +326,9 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
     }
 
     @Nullable
-    public TameableEntity getLeader(){
-        if(this.world instanceof ServerWorld){
-            for(UUID uuid : this.getLeaderUUIDs()) {
+    public TameableEntity getLeader() {
+        if (this.world instanceof ServerWorld) {
+            for (UUID uuid : this.getLeaderUUIDs()) {
                 Entity entity = ((ServerWorld) this.world).getEntityByUuid(uuid);
 
                 if (entity instanceof WolfEntity) {
@@ -519,7 +537,7 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
 
 
         //leader health bounus
-        if(!isTamed() && isLeader()){
+        if (!isTamed() && isLeader()) {
             this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(10.0D);
             this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(4.0D);
         }
@@ -528,7 +546,7 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
 
     @Override
     public void setHowling(boolean howling) {
-        if(howling) {
+        if (howling) {
             this.howlAnimationProgress = 0.0F;
             this.lastHowlAnimationProgress = 0.0F;
         }
@@ -544,7 +562,7 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
     public float getHowlAnimationProgress(float delta) {
         return this.lastHowlAnimationProgress + (this.howlAnimationProgress - this.lastHowlAnimationProgress) * delta;
     }
-    
+
     @Inject(method = "func_241840_a", at = @At("HEAD"), cancellable = true)
     public void func_241840_a(ServerWorld p_241840_1_, AgeableEntity ageable, CallbackInfoReturnable<WolfEntity> callbackInfo) {
         WolfEntity wolfentity = EntityType.WOLF.create(this.world);

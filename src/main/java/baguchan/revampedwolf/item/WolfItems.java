@@ -14,7 +14,7 @@ public class WolfItems {
     public static final Item IRON_WOLF_ARMOR = new WolfArmorItem(ArmorMaterial.IRON, 12, "iron", (new Item.Properties()).maxStackSize(1).maxDamage(241).group(ItemGroup.MISC));
     public static final Item GOLD_WOLF_ARMOR = new WolfArmorItem(ArmorMaterial.GOLD, 8, "gold", (new Item.Properties()).maxStackSize(1).maxDamage(113).group(ItemGroup.MISC));
     public static final Item DIAMOND_WOLF_ARMOR = new WolfArmorItem(ArmorMaterial.DIAMOND, 16, "diamond", (new Item.Properties()).maxStackSize(1).maxDamage(529).group(ItemGroup.MISC));
-    public static final Item NETHERITE_WOLF_ARMOR = new WolfArmorItem(ArmorMaterial.NETHERITE, 20, "netherite", (new Item.Properties()).maxStackSize(1).maxDamage(858).group(ItemGroup.MISC));
+    public static final Item NETHERITE_WOLF_ARMOR = new WolfArmorItem(ArmorMaterial.NETHERITE, 20, "netherite", (new Item.Properties()).isBurnable().maxStackSize(1).maxDamage(858).group(ItemGroup.MISC));
 
 
     @SubscribeEvent
