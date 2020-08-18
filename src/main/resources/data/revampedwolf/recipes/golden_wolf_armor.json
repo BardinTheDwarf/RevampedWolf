@@ -7,13 +7,13 @@
   ],
   "key": {
     "B": {
-      "item": "minecraft:gold_boots"
+      "item": "minecraft:golden_boots"
     },
     "X": {
       "item": "minecraft:gold_ingot"
     }
   },
   "result": {
-    "item": "revampedwolf:gold_wolf_armor"
+    "item": "revampedwolf:golden_wolf_armor"
   }
 }

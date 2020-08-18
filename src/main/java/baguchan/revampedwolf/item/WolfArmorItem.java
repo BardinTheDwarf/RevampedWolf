@@ -57,7 +57,7 @@ public class WolfArmorItem extends Item {
     }
 
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType equipmentSlot) {
-        return equipmentSlot.getSlotType() == EquipmentSlotType.Group.ARMOR ? this.field_234656_m_ : super.getAttributeModifiers(equipmentSlot);
+        return equipmentSlot == EquipmentSlotType.CHEST ? this.field_234656_m_ : super.getAttributeModifiers(equipmentSlot);
     }
 
     public int getItemEnchantability() {

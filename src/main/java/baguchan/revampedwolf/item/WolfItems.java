@@ -21,7 +21,7 @@ public class WolfItems {
     public static void registerItems(RegistryEvent.Register<Item> registry) {
         registry.getRegistry().register(LEATHER_WOLF_ARMOR.setRegistryName("leather_wolf_armor"));
         registry.getRegistry().register(IRON_WOLF_ARMOR.setRegistryName("iron_wolf_armor"));
-        registry.getRegistry().register(GOLD_WOLF_ARMOR.setRegistryName("gold_wolf_armor"));
+        registry.getRegistry().register(GOLD_WOLF_ARMOR.setRegistryName("golden_wolf_armor"));
         registry.getRegistry().register(DIAMOND_WOLF_ARMOR.setRegistryName("diamond_wolf_armor"));
         registry.getRegistry().register(NETHERITE_WOLF_ARMOR.setRegistryName("netherite_wolf_armor"));
     }
