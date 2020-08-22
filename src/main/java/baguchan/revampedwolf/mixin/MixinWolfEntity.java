@@ -2,10 +2,7 @@ package baguchan.revampedwolf.mixin;
 
 import baguchan.revampedwolf.container.WolfInventoryContainer;
 import baguchan.revampedwolf.entity.*;
-import baguchan.revampedwolf.entity.goal.FollowLeaderGoal;
-import baguchan.revampedwolf.entity.goal.GoToEatGoal;
-import baguchan.revampedwolf.entity.goal.HowlGoal;
-import baguchan.revampedwolf.entity.goal.WolfAvoidEntityGoal;
+import baguchan.revampedwolf.entity.goal.*;
 import baguchan.revampedwolf.item.WolfArmorItem;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -108,7 +105,7 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
         this.goalSelector.addGoal(1, new SwimGoal(this));
         this.goalSelector.addGoal(2, new SitGoal(this));
         this.goalSelector.addGoal(3, new WolfAvoidEntityGoal(wolfEntity, LlamaEntity.class, 24.0F, 1.5D, 1.5D));
-        this.goalSelector.addGoal(4, new LeapAtTargetGoal(this, 0.4F));
+        this.goalSelector.addGoal(4, new SafeLeapAtTargetGoal(this, 5));
         this.goalSelector.addGoal(5, new MeleeAttackGoal(this, 1.0D, true));
         this.goalSelector.addGoal(6, new FollowOwnerGoal(this, 1.0D, 10.0F, 2.0F, false));
         this.goalSelector.addGoal(6, new FollowLeaderGoal<>(this));
