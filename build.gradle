@@ -20,7 +20,7 @@ mixin {
     add sourceSets.main, "revampedwolf.refmap.json"
 }
 
-version = '1.16.2-0.5.2'
+version = '1.16.2-0.6.0'
 group = 'baguchan.revampedwolf' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'RevampedWolf'
 
