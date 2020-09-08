@@ -1,7 +1,7 @@
 package baguchan.revampedwolf.mixin.client;
 
 import baguchan.revampedwolf.RevampedWolfCore;
-import baguchan.revampedwolf.client.layer.LeatherWolfArmorLayer;
+import baguchan.revampedwolf.client.layer.WolfArmorLayer;
 import baguchan.revampedwolf.client.layer.WolfHeldItemLayer;
 import baguchan.revampedwolf.entity.IWolfType;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
@@ -26,7 +26,7 @@ public abstract class MixinWolfRenderer extends MobRenderer<WolfEntity, WolfMode
     @Inject(method = "<init>(Lnet/minecraft/client/renderer/entity/EntityRendererManager;)V", at = @At("RETURN"))
     public void onConstructor(CallbackInfo info) {
         this.addLayer(new WolfHeldItemLayer(this));
-        this.addLayer(new LeatherWolfArmorLayer(this));
+        this.addLayer(new WolfArmorLayer(this));
     }
 
     /**
