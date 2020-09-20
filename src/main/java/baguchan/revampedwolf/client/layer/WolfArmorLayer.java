@@ -48,7 +48,7 @@ public class WolfArmorLayer extends LayerRenderer<WolfEntity, WolfModel<WolfEnti
                 f2 = 1.0F;
             }
 
-            IVertexBuilder ivertexbuilder = ItemRenderer.func_239386_a_(bufferIn, RenderType.func_239263_a_(wolfarmoritem.getArmorTexture()), false, flag1);
+            IVertexBuilder ivertexbuilder = ItemRenderer.getArmorVertexBuilder(bufferIn, RenderType.getArmorCutoutNoCull(wolfarmoritem.getArmorTexture()), false, flag1);
             this.model.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, f, f1, f2, 1.0F);
             matrixStackIn.pop();
         }

@@ -28,7 +28,7 @@ public class HowlGoal extends Goal {
         if (--this.cooldown <= 0) {
             this.cooldown = this.setCoolDown(this.mob);
 
-            return (this.mob.isTamed() && this.mob.func_233685_eM_() || !this.mob.isTamed()) && this.mob.getAttackTarget() == null && this.world.canSeeSky(new BlockPos(this.mob.getPositionVec())) && world.getDayTime() > 16000 && world.getDayTime() < 21000 &&
+            return (this.mob.isTamed() && this.mob.isSitting() || !this.mob.isTamed()) && this.mob.getAttackTarget() == null && this.world.canSeeSky(new BlockPos(this.mob.getPositionVec())) && world.getDayTime() > 16000 && world.getDayTime() < 21000 &&
                     !mob.isChild() && this.mob.getRNG().nextInt(15) == 0;
         }
         return false;

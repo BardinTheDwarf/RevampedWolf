@@ -200,7 +200,7 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
     @Inject(method = "func_230254_b_", at = @At("HEAD"), cancellable = true)
     public void func_230254_b_(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResultType> callbackInfo) {
         if (!this.isChild()) {
-            if (this.isTamed() && this.func_233685_eM_() && player.isSecondaryUseActive()) {
+            if (this.isTamed() && this.isSitting() && player.isSecondaryUseActive()) {
                 if (player instanceof ServerPlayerEntity && !(player instanceof FakePlayer)) {
                     if (!player.world.isRemote) {
                         ServerPlayerEntity entityPlayerMP = (ServerPlayerEntity) player;
@@ -250,7 +250,7 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
 
 
             ItemStack itemstack = this.wolfInventory.getStackInSlot(0);
-            if ((!damageSource.isFireDamage() || !itemstack.getItem().isBurnable()) && itemstack.getItem() instanceof WolfArmorItem) {
+            if ((!damageSource.isFireDamage() || !itemstack.getItem().isImmuneToFire()) && itemstack.getItem() instanceof WolfArmorItem) {
                 itemstack.damageItem((int) damage, this, (p_214023_1_) -> {
                     p_214023_1_.sendBreakAnimation(EquipmentSlotType.CHEST);
                 });

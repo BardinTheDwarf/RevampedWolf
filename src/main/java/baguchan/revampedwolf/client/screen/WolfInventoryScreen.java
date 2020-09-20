@@ -44,6 +44,6 @@ public class WolfInventoryScreen extends ContainerScreen<WolfInventoryContainer>
         this.mousePosx = (float) mouseX;
         this.mousePosY = (float) mouseY;
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-        this.func_230459_a_(matrixStack, mouseX, mouseY);
+        this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
     }
 }
