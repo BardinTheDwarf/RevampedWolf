@@ -537,6 +537,7 @@ public abstract class MixinWolfEntity extends TameableEntity implements HowlingE
         if (!isTamed() && isLeader()) {
             this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(10.0D);
             this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(4.0D);
+            this.setHealth(this.getMaxHealth());
         }
         return spawnDataIn;
     }
